@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Presentación Pareto Posventa — Análisis Estratégico</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="presentation-container" id="presentationContainer">
+  
+  <!-- Story-style Progress Bars -->
+  <div class="story-progress-container" id="storyProgressContainer">
+    <!-- Generated dynamically -->
+  </div>
+
+  <!-- Header Bar -->
+  <header class="top-header">
+    <div class="brand-badge">
+      <div class="brand-dot"></div>
+      <div>
+        <div class="brand-title" id="headerTitle">Control de Calidad & Posventa</div>
+        <div class="brand-sub" id="headerPeriod">Junio 2026 — Fábrica, Living y Terceros</div>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button class="btn-header" id="btnEdit" title="Editar datos (Tecla E)">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+        <span>Editar Datos</span>
+      </button>
+      <button class="btn-header" id="btnFullscreen" title="Pantalla Completa (F11)">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+        <span id="fullscreenText">Pantalla Completa</span>
+      </button>
+      <span class="slide-counter" id="slideCounter">1 / 6</span>
+    </div>
+  </header>
+
+  <!-- Slides Viewport -->
+  <main class="slides-viewport" id="slidesViewport">
+    
+    <!-- SLIDE 1: PORTADA EJECUTIVA -->
+    <section class="slide active" data-slide="0">
+      <div class="cover-layout">
+        <div class="cover-badge" id="coverBadge">Informe Gerencial Mensual</div>
+        <h1 class="cover-title" id="coverTitle">PRESENTACIÓN PARETO POSVENTA</h1>
+        <p class="cover-subtitle" id="coverSubtitle">Análisis Estratégico de Oportunidades y Mejoras (Fábrica, Living y Terceros)</p>
+        
+        <div class="kpi-row">
+          <div class="kpi-card highlight">
+            <div class="kpi-label">Total Reclamos Junio</div>
+            <div class="kpi-value text-danger" id="kpiTotalJune">57</div>
+            <div class="kpi-sub" id="kpiVariation">+58% vs Mayo (36)</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Sector Fábrica</div>
+            <div class="kpi-value text-info" id="kpiFabrica">46</div>
+            <div class="kpi-sub" id="kpiFabricaPct">80.7% del total de fallas</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Sector Living</div>
+            <div class="kpi-value text-warning" id="kpiLiving">7</div>
+            <div class="kpi-sub" id="kpiLivingPct">12.3% del total de fallas</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Sector Terceros</div>
+            <div class="kpi-value text-primary" id="kpiTerceros">4</div>
+            <div class="kpi-sub" id="kpiTercerosPct">7.0% del total de fallas</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 2: SEMÁFORO Y EVOLUCIÓN HISTÓRICA -->
+    <section class="slide" data-slide="1">
+      <div class="slide-header-block">
+        <div class="slide-tag">Evolución Trimestral</div>
+        <h2 class="slide-heading">Volumen General de Reclamos y Estado de Calidad</h2>
+        <p class="slide-desc">Comparativa del comportamiento en fábrica durante el segundo trimestre 2026.</p>
+      </div>
+
+      <div class="split-layout-2">
+        <div class="chart-card">
+          <div class="card-title-row">
+            <span class="card-title">Evolución de Reclamos Totales (Abril — Mayo — Junio)</span>
+            <span class="card-tag">Tendencia Trimestral</span>
+          </div>
+          <div class="canvas-container">
+            <canvas id="canvasEvolucion"></canvas>
+          </div>
+        </div>
+
+        <div class="indicator-list" id="indicatorListContainer">
+          <!-- Populated from JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 3: PARETO FÁBRICA -->
+    <section class="slide" data-slide="2">
+      <div class="slide-header-block">
+        <div class="slide-tag">Sector Crítico (80.7% del Volumen)</div>
+        <h2 class="slide-heading">Pareto Sector Fábrica — Junio 2026</h2>
+        <p class="slide-desc">Identificación de las pocas causas vitales que generan el mayor impacto en calidad.</p>
+      </div>
+
+      <div class="pareto-layout">
+        <div class="chart-card">
+          <div class="card-title-row">
+            <span class="card-title">Diagrama de Pareto: Defectos vs % Acumulado</span>
+            <span class="card-tag">46 Reclamos Totales</span>
+          </div>
+          <div class="canvas-container">
+            <canvas id="canvasParetoFabrica"></canvas>
+          </div>
+        </div>
+
+        <div class="pareto-info-panel">
+          <div class="alert-box">
+            <div class="alert-title">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              <span>Alerta de Manipuleo y Flete</span>
+            </div>
+            <div class="alert-body">
+              <strong>Rayado (14) + Roto (9)</strong> representan el <strong>50.0%</strong> de los reclamos totales de la fábrica. El problema dejó de estar en los faltantes de herrajes y se trasladó directamente al <strong>manipuleo interno y logística de transporte</strong>.
+            </div>
+          </div>
+
+          <div style="flex: 1; overflow-y: auto;">
+            <table class="table-mini" id="tableMiniFabrica">
+              <thead>
+                <tr>
+                  <th>Defecto</th>
+                  <th style="text-align: right;">Cant.</th>
+                  <th style="text-align: right;">%</th>
+                  <th style="text-align: right;">% Acum.</th>
+                  <th style="text-align: center;">Zona</th>
+                </tr>
+              </thead>
+              <tbody id="tbodyFabricaMini">
+                <!-- Populated from JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 4: LIVING Y TERCEROS -->
+    <section class="slide" data-slide="3">
+      <div class="slide-header-block">
+        <div class="slide-tag">Líneas Satélites</div>
+        <h2 class="slide-heading">Pareto Sector Living & Terceros — Junio 2026</h2>
+        <p class="slide-desc">Auditoría sobre líneas tapizadas y componentes provistos por terceros.</p>
+      </div>
+
+      <div class="dual-pareto-grid">
+        <div class="chart-card">
+          <div class="card-title-row">
+            <span class="card-title">Sector Living (7 Reclamos)</span>
+            <span class="card-tag">Tapicería & Sillones</span>
+          </div>
+          <div class="canvas-container">
+            <canvas id="canvasParetoLiving"></canvas>
+          </div>
+        </div>
+
+        <div class="chart-card">
+          <div class="card-title-row">
+            <span class="card-title">Sector Terceros (4 Reclamos)</span>
+            <span class="card-tag">Proveedores Externos</span>
+          </div>
+          <div class="canvas-container">
+            <canvas id="canvasParetoTerceros"></canvas>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 5: EVOLUCIÓN HISTÓRICA DE DEFECTOS -->
+    <section class="slide" data-slide="4">
+      <div class="slide-header-block">
+        <div class="slide-tag">Trazabilidad de Causa Raíz</div>
+        <h2 class="slide-heading">Mutación Histórica de Fallas (Abril vs Mayo vs Junio)</h2>
+        <p class="slide-desc">Cómo fueron cambiando los problemas críticos a lo largo del trimestre.</p>
+      </div>
+
+      <div class="split-layout-2">
+        <div class="chart-card">
+          <div class="card-title-row">
+            <span class="card-title">Comparativa de Principales Defectos por Mes</span>
+            <span class="card-tag">Histórico de Fábrica</span>
+          </div>
+          <div class="canvas-container">
+            <canvas id="canvasDefectosHistoricos"></canvas>
+          </div>
+        </div>
+
+        <div class="indicator-list" id="historyInsightsContainer">
+          <div class="indicator-card warning">
+            <div class="ind-header">
+              <span class="ind-name">Abril 2026 — Foco en Herrajes</span>
+              <span class="ind-badge warning">Resuelto</span>
+            </div>
+            <div class="ind-conclusion">
+              El <strong>15%</strong> de los reclamos eran faltantes de piezas y tornillería. Se reforzó el control de empaque en bolsitas y el problema disminuyó drásticamente.
+            </div>
+          </div>
+
+          <div class="indicator-card warning">
+            <div class="ind-header">
+              <span class="ind-name">Mayo 2026 — Aparición de Roturas</span>
+              <span class="ind-badge warning">Transición</span>
+            </div>
+            <div class="ind-conclusion">
+              El volumen general cayó casi un 50% (36 reclamos), pero <strong>Roto / Partido</strong> se convirtió en la falla #1 (19.4%), avisando el problema en fletes.
+            </div>
+          </div>
+
+          <div class="indicator-card danger">
+            <div class="ind-header">
+              <span class="ind-name">Junio 2026 — Alerta Roja de Manipuleo</span>
+              <span class="ind-badge danger">Crítico</span>
+            </div>
+            <div class="ind-conclusion">
+              Explosión de <strong>Rayados y Rotos (50% conjunto)</strong>. Además, el defecto de <strong>Lustre/Color</strong> se mantiene crónico en 11-13% en los 3 meses.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 6: MATRIZ DE ACCIÓN DIRECTIVA -->
+    <section class="slide" data-slide="5">
+      <div class="slide-header-block">
+        <div class="slide-tag">Plan de Acción y Cierre</div>
+        <h2 class="slide-heading">Decisiones Estratégicas y Compromisos de Fábrica</h2>
+        <p class="slide-desc">Intervenciones inmediatas acordadas entre Producción, Calidad y Gerencia.</p>
+      </div>
+
+      <div class="actions-grid" id="actionsGridContainer">
+        <!-- Populated from JS -->
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Bottom Navigation Controls -->
+  <footer class="bottom-controls">
+    <div class="shortcut-hint">
+      Navegación: <span class="shortcut-key">←</span> <span class="shortcut-key">→</span> o <span class="shortcut-key">Espacio</span> | Pantalla completa: <span class="shortcut-key">F11</span> | Editar: <span class="shortcut-key">E</span>
+    </div>
+    <div class="nav-buttons">
+      <button class="btn-nav" id="btnPrev" title="Anterior (Flecha izquierda)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+        <span>Anterior</span>
+      </button>
+      <button class="btn-nav" id="btnNext" title="Siguiente (Flecha derecha o Espacio)">
+        <span>Siguiente</span>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+      </button>
+    </div>
+  </footer>
+
+</div>
+
+<!-- ==============================================================
+     MODAL EDITOR (100% EDITABLE MES A MES)
+     ============================================================== -->
+<div class="modal-overlay" id="editorModal">
+  <div class="modal-container">
+    
+    <div class="modal-header">
+      <div class="modal-title">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+        <span>Panel de Control & Editor de Datos Mensuales</span>
+      </div>
+      <button class="btn-close" id="btnCloseModal">&times;</button>
+    </div>
+
+    <div class="editor-tabs">
+      <button class="editor-tab active" data-tab="tab-general">General & Período</button>
+      <button class="editor-tab" data-tab="tab-fabrica">Fábrica (Pareto)</button>
+      <button class="editor-tab" data-tab="tab-living">Living</button>
+      <button class="editor-tab" data-tab="tab-terceros">Terceros</button>
+      <button class="editor-tab" data-tab="tab-indicadores">Indicadores de Calidad</button>
+      <button class="editor-tab" data-tab="tab-acciones">Planes de Acción</button>
+      <button class="editor-tab" data-tab="tab-archivos">Guardar / Exportar / Pendrive</button>
+    </div>
+
+    <div class="modal-body">
+      
+      <!-- TAB GENERAL -->
+      <div class="tab-pane active" id="tab-general">
+        <div class="form-group">
+          <label class="form-label">Título Principal</label>
+          <input type="text" class="form-input" id="editTitle" value="PRESENTACIÓN PARETO POSVENTA">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Subtítulo / Alcance</label>
+          <input type="text" class="form-input" id="editSubtitle" value="Análisis Estratégico de Oportunidades y Mejoras (Fábrica, Living y Terceros)">
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+          <div class="form-group">
+            <label class="form-label">Período de Análisis</label>
+            <input type="text" class="form-input" id="editPeriod" value="Junio 2026">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Nombre del Sector / Empresa</label>
+            <input type="text" class="form-input" id="editCompany" value="Control de Calidad & Posventa">
+          </div>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px;">
+          <div class="form-group">
+            <label class="form-label">Mes Anterior (Cantidad Total)</label>
+            <input type="number" class="form-input" id="editPrevMonth" value="36">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Hace 2 Meses (Cantidad Total)</label>
+            <input type="number" class="form-input" id="editTwoMonthsAgo" value="66">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Meta de Reducción</label>
+            <input type="text" class="form-input" id="editTargetReduction" value="30%">
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB FABRICA -->
+      <div class="tab-pane" id="tab-fabrica">
+        <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px;">
+          Modificá los reclamos de Fábrica. El sistema recalcula automáticamente los porcentajes, el total y el Pareto en vivo.
+        </p>
+        <table class="editor-table">
+          <thead>
+            <tr>
+              <th>Tipo de Reclamo / Defecto</th>
+              <th style="width: 140px;">Cantidad</th>
+              <th style="width: 80px; text-align: center;">Acción</th>
+            </tr>
+          </thead>
+          <tbody id="editFabricaTbody">
+            <!-- Populated via JS -->
+          </tbody>
+        </table>
+        <button class="btn-add-row" id="btnAddFabricaRow">+ Agregar Fila a Fábrica</button>
+      </div>
+
+      <!-- TAB LIVING -->
+      <div class="tab-pane" id="tab-living">
+        <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px;">
+          Reclamos del sector Living (Tapicería y sillones).
+        </p>
+        <table class="editor-table">
+          <thead>
+            <tr>
+              <th>Tipo de Reclamo / Defecto</th>
+              <th style="width: 140px;">Cantidad</th>
+              <th style="width: 80px; text-align: center;">Acción</th>
+            </tr>
+          </thead>
+          <tbody id="editLivingTbody">
+            <!-- Populated via JS -->
+          </tbody>
+        </table>
+        <button class="btn-add-row" id="btnAddLivingRow">+ Agregar Fila a Living</button>
+      </div>
+
+      <!-- TAB TERCEROS -->
+      <div class="tab-pane" id="tab-terceros">
+        <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px;">
+          Reclamos de partes o artículos provistos por terceros.
+        </p>
+        <table class="editor-table">
+          <thead>
+            <tr>
+              <th>Tipo de Reclamo / Defecto</th>
+              <th style="width: 140px;">Cantidad</th>
+              <th style="width: 80px; text-align: center;">Acción</th>
+            </tr>
+          </thead>
+          <tbody id="editTercerosTbody">
+            <!-- Populated via JS -->
+          </tbody>
+        </table>
+        <button class="btn-add-row" id="btnAddTercerosRow">+ Agregar Fila a Terceros</button>
+      </div>
+
+      <!-- TAB INDICADORES -->
+      <div class="tab-pane" id="tab-indicadores">
+        <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px;">
+          Editá las conclusiones y advertencias gerenciales que se presentan en la reunión.
+        </p>
+        <div id="editIndicadoresContainer">
+          <!-- Populated via JS -->
+        </div>
+      </div>
+
+      <!-- TAB ACCIONES -->
+      <div class="tab-pane" id="tab-acciones">
+        <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px;">
+          Compromisos y planes de acción directivos para la Slide de Cierre.
+        </p>
+        <div id="editAccionesContainer">
+          <!-- Populated via JS -->
+        </div>
+      </div>
+
+      <!-- TAB GUARDAR / IMPORTAR / PENDRIVE -->
+      <div class="tab-pane" id="tab-archivos">
+        <div style="display: flex; flex-direction: column; gap: 20px;">
+          <div style="background-color: var(--bg-main); border: 1px solid var(--border-subtle); border-radius: 8px; padding: 16px;">
+            <h4 style="font-size: 14px; font-weight: 700; margin-bottom: 8px; color: var(--accent-blue);">Guardar y Llevar en el Pendrive</h4>
+            <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 14px;">
+              Descargá un archivo con todos los datos actuales. Podés guardarlo en tu pendrive (ej: <code>pareto_julio_2026.json</code>) y cargarlo en cualquier máquina antes de la reunión.
+            </p>
+            <div style="display: flex; gap: 12px; align-items: center;">
+              <button class="btn-primary" id="btnExportJson">Descargar Archivo JSON de Datos</button>
+              <label class="btn-secondary" style="cursor: pointer;">
+                Cargar Archivo JSON
+                <input type="file" id="inputFileJson" accept=".json" style="display: none;">
+              </label>
+            </div>
+          </div>
+
+          <div style="background-color: var(--bg-main); border: 1px solid var(--border-subtle); border-radius: 8px; padding: 16px;">
+            <h4 style="font-size: 14px; font-weight: 700; margin-bottom: 8px; color: var(--accent-amber);">Copiar y Pegar desde Excel</h4>
+            <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 8px;">
+              Copiá dos columnas desde Excel (Columna 1: Causa, Columna 2: Cantidad) y pegalas acá abajo para importarlas directamente al sector Fábrica:
+            </p>
+            <textarea id="pasteExcelTextarea" class="form-textarea" rows="4" placeholder="Ejemplo:&#10;Rayado / Golpeado	14&#10;Roto / Quebrado	9"></textarea>
+            <button class="btn-secondary" id="btnImportFromPaste" style="margin-top: 10px;">Importar Celdas Pegadas a Fábrica</button>
+          </div>
+
+          <div style="display: flex; justify-content: flex-end;">
+            <button class="btn-secondary" id="btnResetDefault" style="color: var(--accent-red); border-color: rgba(239, 68, 68, 0.4);">Restablecer Datos Originales</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="modal-footer">
+      <div class="footer-left">
+        <span style="font-size: 12px; color: var(--text-muted);">Los cambios se guardan automáticamente en tu navegador.</span>
+      </div>
+      <div class="footer-right">
+        <button class="btn-secondary" id="btnCancelModal">Cerrar</button>
+        <button class="btn-primary" id="btnSaveModal">Aplicar y Ver Presentación</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Toast notification -->
+<div class="toast-notice" id="toastNotice">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+  <span id="toastText">Datos actualizados con éxito</span>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

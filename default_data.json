@@ -1,0 +1,147 @@
+{
+  "general": {
+    "title": "PRESENTACIÓN PARETO POSVENTA",
+    "subtitle": "Análisis Estratégico de Oportunidades y Mejoras (Fábrica, Living y Terceros)",
+    "period": "Junio 2026",
+    "company": "Control de Calidad & Posventa",
+    "lastUpdated": "2026-11-08"
+  },
+  "summary": {
+    "totalClaims": 57,
+    "prevMonthTotal": 36,
+    "twoMonthsAgoTotal": 66,
+    "targetReduction": "30%",
+    "fabricaTotal": 46,
+    "livingTotal": 7,
+    "tercerosTotal": 4
+  },
+  "sectors": {
+    "fabrica": {
+      "name": "Sector Fábrica",
+      "period": "Junio 2026",
+      "total": 46,
+      "items": [
+        { "cause": "Rayado / Golpeado / Marcado", "qty": 14 },
+        { "cause": "Roto / Quebrado / Partido", "qty": 9 },
+        { "cause": "Faltantes de Piezas / Herrajes", "qty": 6 },
+        { "cause": "Lustre / Color / Terminación", "qty": 3 },
+        { "cause": "Tela / Tapizado", "qty": 3 },
+        { "cause": "Perforaciones", "qty": 2 },
+        { "cause": "Panceado", "qty": 1 },
+        { "cause": "Reclamos Varios", "qty": 8 }
+      ]
+    },
+    "living": {
+      "name": "Sector Living",
+      "period": "Junio 2026",
+      "total": 7,
+      "items": [
+        { "cause": "Problema de Lustre / Color", "qty": 2 },
+        { "cause": "Roto / Quebrado", "qty": 2 },
+        { "cause": "Problema de Tela / Tapizado", "qty": 1 },
+        { "cause": "Otros Reclamos", "qty": 2 }
+      ]
+    },
+    "terceros": {
+      "name": "Sector Terceros",
+      "period": "Junio 2026",
+      "total": 4,
+      "items": [
+        { "cause": "Faltan piezas / Accesorios", "qty": 2 },
+        { "cause": "Rayado / Golpeado / Marcado", "qty": 1 },
+        { "cause": "Roto / Quebrado / Partido", "qty": 1 }
+      ]
+    }
+  },
+  "history": {
+    "mayo": {
+      "period": "Mayo 2026",
+      "total": 36,
+      "items": [
+        { "cause": "Roto / Quebrado / Partido", "qty": 7 },
+        { "cause": "Lustre / Color / Terminación", "qty": 4 },
+        { "cause": "Rayado / Golpeado", "qty": 4 },
+        { "cause": "Faltantes de Piezas / Herrajes", "qty": 3 },
+        { "cause": "Armado / Perforaciones", "qty": 1 },
+        { "cause": "Problema de Tela / Tapizado", "qty": 1 },
+        { "cause": "Problema con Vidrios", "qty": 1 },
+        { "cause": "Reclamos Varios", "qty": 15 }
+      ]
+    },
+    "abril": {
+      "period": "Abril 2026",
+      "total": 66,
+      "auditCount": 15,
+      "items": [
+        { "cause": "Roto / Quebrado / Partido", "qty": 4 },
+        { "cause": "Faltan piezas / Accesorios", "qty": 3 },
+        { "cause": "Rayado / Golpeado / Marcado", "qty": 2 },
+        { "cause": "Reclamos Varios", "qty": 6 }
+      ]
+    }
+  },
+  "indicators": [
+    {
+      "name": "Volumen Total Reclamos",
+      "abril": "66 Reclamos",
+      "mayo": "36 Reclamos",
+      "junio": "57 Reclamos",
+      "status": "REBOTE",
+      "type": "warning",
+      "conclusion": "Rebote de +58% en Junio respecto a Mayo. La suba se originó casi en su totalidad en el sector Fábrica."
+    },
+    {
+      "name": "Principal Defecto (Top 1)",
+      "abril": "Faltantes de herrajes (15%)",
+      "mayo": "Roto / Quebrado (19.4%)",
+      "junio": "Rayado / Golpeado (30.4%)",
+      "status": "ALERTA ROJA",
+      "type": "danger",
+      "conclusion": "Dejamos de olvidar herrajes, pero la madera se raya y rompe severamente en manipuleo interno y flete (50% del total acumulado)."
+    },
+    {
+      "name": "Segundo Defecto (Top 2)",
+      "abril": "Lustre / Color (13.6%)",
+      "mayo": "Lustre / Color (11.1%)",
+      "junio": "Roto / Quebrado (19.6%)",
+      "status": "CRÓNICO",
+      "type": "warning",
+      "conclusion": "Fallas persistentes en cabina de pintura (diferencia de tono y pérdida de brillo). Se suma el quiebre de partes."
+    },
+    {
+      "name": "Producto Más Crítico",
+      "abril": "Mesa Euro (18 reclamos)",
+      "mayo": "Mesa Euro (Terminación)",
+      "junio": "Mesa Euro (Golpes y Lustre)",
+      "status": "CRÍTICO URGENTE",
+      "type": "danger",
+      "conclusion": "Sigue concentrando el mayor volumen de reclamos de postventa por embalaje débil y daños de esquinas. Requiere nuevo packaging ya."
+    }
+  ],
+  "actions": [
+    {
+      "area": "Logística & Transporte",
+      "priority": "Alta",
+      "title": "Protocolo de Estiba y Fijación en Camiones",
+      "desc": "El 50% de las fallas de fábrica corresponden a golpes y roturas. Implementar esquineros de cartón reforzado y mantas de alta densidad para traslados.",
+      "responsible": "Jefe de Depósito / Fletes",
+      "deadline": "Inmediato"
+    },
+    {
+      "area": "Cabina de Pintura & Lustre",
+      "priority": "Media",
+      "title": "Calibración de Mezclas y Control de Curado",
+      "desc": "Auditar la dosificación de catalizador y viscosidad de lacas. Estandarizar el tiempo de secado previo a empaque para evitar marcas por presión.",
+      "responsible": "Encargado de Lustre",
+      "deadline": "15 Días"
+    },
+    {
+      "area": "Línea Mesa Euro",
+      "priority": "Crítica",
+      "title": "Rediseño de Packaging y Refuerzo de Punteras",
+      "desc": "Diseñar embalaje integral de polietileno expandido y protectores plásticos en las 4 esquinas de la tapa antes de salir de línea.",
+      "responsible": "Ingeniería de Producto / Producción",
+      "deadline": "7 Días"
+    }
+  ]
+}

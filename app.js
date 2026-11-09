@@ -549,6 +549,16 @@ function animateEvolutionChart() {
   draw();
 }
 
+// Helper para formatear nombres largos en los gráficos de Pareto sin desbordar ni cortar
+function formatParetoLabel(text) {
+  if (!text) return "";
+  const parts = text.split("/").map(s => s.trim());
+  if (parts.length >= 3) {
+    return parts[0] + " / " + parts[1];
+  }
+  return text;
+}
+
 // GRÁFICO 2: PARETO ANIMADO (BARRAS + CURVA ACUMULADA AL 80%)
 function animateParetoChart(canvasId, items, sectorName) {
   const setup = setupCanvas(canvasId);
@@ -564,6 +574,7 @@ function animateParetoChart(canvasId, items, sectorName) {
     cumSum += item.qty;
     return {
       cause: item.cause,
+      displayCause: formatParetoLabel(item.cause),
       qty: item.qty,
       pct: item.qty / total,
       cumPct: cumSum / total
@@ -571,21 +582,21 @@ function animateParetoChart(canvasId, items, sectorName) {
   });
 
   const count = data.length;
-  // Si hay 4 o menos items (como Living o Terceros), mostramos textos horizontales
+  // Si hay 4 o menos items (Living o Terceros), mostramos textos horizontales
   const isHorizontal = count <= 4;
   
-  // Padding adaptativo para garantizar que nunca se corte el texto abajo
-  const padL = 48;
+  // Padding adaptativo: padL generoso (82px) para que el primer puesto ("Rayado...") NUNCA se corte a la izquierda
+  const padL = 82;
   const padR = 48;
-  const padT = 40;
-  const padB = isHorizontal ? 65 : Math.max(100, Math.min(125, height * 0.28));
+  const padT = 45;
+  const padB = isHorizontal ? 75 : Math.max(105, Math.min(130, height * 0.28));
   
   const chartW = width - padL - padR;
   const chartH = height - padT - padB;
 
-  const maxQty = Math.max(...data.map(d => d.qty)) * 1.28;
+  const maxQty = Math.max(...data.map(d => d.qty)) * 1.3;
   const colW = chartW / count;
-  const barW = Math.max(16, Math.min(isHorizontal ? 75 : 55, colW * 0.58));
+  const barW = Math.max(18, Math.min(isHorizontal ? 75 : 52, colW * 0.58));
 
   let progress = 0;
 
@@ -627,8 +638,8 @@ function animateParetoChart(canvasId, items, sectorName) {
     ctx.fillStyle = "#94a3b8";
     ctx.font = "bold 11px sans-serif";
     ctx.textAlign = "right";
-    ctx.fillText(Math.round(maxQty), padL - 10, padT + 8);
-    ctx.fillText("0", padL - 10, padT + chartH);
+    ctx.fillText(Math.round(maxQty), padL - 12, padT + 8);
+    ctx.fillText("0", padL - 12, padT + chartH);
 
     // Eje derecho (Porcentaje 100%)
     ctx.textAlign = "left";
@@ -636,13 +647,13 @@ function animateParetoChart(canvasId, items, sectorName) {
     ctx.fillText("80%", width - padR + 10, y80 + 4);
     ctx.fillText("0%", width - padR + 10, padT + chartH);
 
-    // DIBUJAR BARRAS
+    // DIBUJAR BARRAS Y VALORES INTERNOS (SIN COLISIONES)
     data.forEach((d, i) => {
       const x = padL + i * colW + (colW - barW) / 2;
       const barH = (d.qty / maxQty) * chartH * progress;
       const y = padT + chartH - barH;
 
-      // Color de barra: azul para causas vitales (80%) y slate oscuro para triviales
+      // Color de barra: azul para causas vitales (80%) y slate para triviales
       const isVital = d.cumPct <= 0.805 || i < 2;
       ctx.fillStyle = isVital ? "#38bdf8" : "#334155";
 
@@ -650,50 +661,57 @@ function animateParetoChart(canvasId, items, sectorName) {
       ctx.roundRect(x, y, barW, barH, [6, 6, 0, 0]);
       ctx.fill();
 
-      // Cantidad y porcentaje sobre la barra
+      // VALORES ADENTRO DE LA BARRA (Para no pisar la curva acumulada de Pareto)
       if (progress > 0.45) {
-        ctx.fillStyle = "#ffffff";
-        ctx.font = "bold 14px sans-serif";
-        ctx.textAlign = "center";
-        ctx.fillText(d.qty, x + barW / 2, y - 8);
+        if (barH >= 40) {
+          // Barra alta: datos adentro del cuerpo de la barra
+          ctx.fillStyle = "#ffffff";
+          ctx.font = "bold 15px sans-serif";
+          ctx.textAlign = "center";
+          ctx.fillText(d.qty, x + barW / 2, y + 18);
 
-        // Porcentaje individual
-        ctx.fillStyle = isVital ? "#7dd3fc" : "#94a3b8";
-        ctx.font = "bold 10px sans-serif";
-        ctx.fillText((d.pct * 100).toFixed(1) + "%", x + barW / 2, y - 24);
+          ctx.fillStyle = isVital ? "#bae6fd" : "#cbd5e1";
+          ctx.font = "bold 10px sans-serif";
+          ctx.fillText((d.pct * 100).toFixed(1) + "%", x + barW / 2, y + 32);
+        } else {
+          // Barra baja (1 o 2 reclamos): datos justo arriba de la barra (la curva pasa 150px más arriba)
+          ctx.fillStyle = "#ffffff";
+          ctx.font = "bold 13px sans-serif";
+          ctx.textAlign = "center";
+          ctx.fillText(d.qty, x + barW / 2, y - 6);
+
+          ctx.fillStyle = isVital ? "#38bdf8" : "#94a3b8";
+          ctx.font = "bold 9px sans-serif";
+          ctx.fillText((d.pct * 100).toFixed(1) + "%", x + barW / 2, y - 18);
+        }
       }
 
       // ETIQUETAS DEBAJO DE LAS BARRAS (LEGIBLES Y SIN CORTES)
       if (isHorizontal) {
-        // MODO HORIZONTAL (Living y Terceros): Centrado y en 2 líneas si es largo
+        // MODO HORIZONTAL (Living y Terceros): Centrado en 1 o 2 líneas
         ctx.fillStyle = "#e2e8f0";
         ctx.font = "bold 12px sans-serif";
         ctx.textAlign = "center";
         
-        const words = d.cause.split(" ");
-        if (words.length > 2 && d.cause.length > 14) {
+        const words = d.displayCause.split(" ");
+        if (words.length > 2 && d.displayCause.length > 13) {
           const mid = Math.ceil(words.length / 2);
           const line1 = words.slice(0, mid).join(" ");
           const line2 = words.slice(mid).join(" ");
-          ctx.fillText(line1, x + barW / 2, padT + chartH + 18);
-          ctx.fillText(line2, x + barW / 2, padT + chartH + 34);
+          ctx.fillText(line1, x + barW / 2, padT + chartH + 20);
+          ctx.fillText(line2, x + barW / 2, padT + chartH + 36);
         } else {
-          ctx.fillText(d.cause, x + barW / 2, padT + chartH + 22);
+          ctx.fillText(d.displayCause, x + barW / 2, padT + chartH + 24);
         }
       } else {
-        // MODO ROTADO OPTIMIZADO (Fábrica): Ángulo suave de -34° con margen garantizado
+        // MODO ROTADO OPTIMIZADO (Fábrica): Ángulo suave de -32° con margen izquierdo garantizado
         ctx.save();
-        ctx.translate(x + barW / 2 + 5, padT + chartH + 16);
-        ctx.rotate(-0.58); // aprox -33 grados
+        ctx.translate(x + barW / 2, padT + chartH + 16);
+        ctx.rotate(-0.56); // aprox -32 grados
         ctx.fillStyle = isVital ? "#f1f5f9" : "#cbd5e1";
         ctx.font = "bold 12px sans-serif";
         ctx.textAlign = "right";
-        
-        let labelText = d.cause;
-        if (labelText.length > 26) {
-          labelText = labelText.substring(0, 24) + "…";
-        }
-        ctx.fillText(labelText, 0, 0);
+        ctx.fillText(d.displayCause, 0, 0);
         ctx.restore();
       }
     });
@@ -708,14 +726,14 @@ function animateParetoChart(canvasId, items, sectorName) {
       const x = padL + i * colW + colW / 2;
       const curCum = d.cumPct * progress;
       const y = padT + chartH * (1 - curCum);
-      points.push({ x, y, cumPct: d.cumPct, qty: d.qty });
+      points.push({ x, y, cumPct: d.cumPct });
 
       if (i === 0) ctx.moveTo(x, y);
       else ctx.lineTo(x, y);
     });
     ctx.stroke();
 
-    // PUNTOS Y ETIQUETAS DE % ACUMULADO SOBRE LA CURVA
+    // PUNTOS Y BADGES FLOTANTES DE % ACUMULADO (AISLADOS Y LIMPIOS)
     if (progress > 0.65) {
       points.forEach(p => {
         // Círculo dorado con borde oscuro
@@ -727,11 +745,26 @@ function animateParetoChart(canvasId, items, sectorName) {
         ctx.lineWidth = 2;
         ctx.stroke();
 
-        // Texto con el % acumulado sobre el punto
+        // Badge flotante para el % acumulado (con fondo oscuro para no empastarse)
+        const label = (p.cumPct * 100).toFixed(1) + "%";
+        ctx.font = "bold 10px sans-serif";
+        const textW = ctx.measureText(label).width;
+        const badgeW = textW + 10;
+        const badgeH = 17;
+        const badgeX = p.x - badgeW / 2;
+        const badgeY = p.y - 23;
+
+        ctx.fillStyle = "rgba(11, 15, 25, 0.92)";
+        ctx.beginPath();
+        ctx.roundRect(badgeX, badgeY, badgeW, badgeH, 4);
+        ctx.fill();
+        ctx.strokeStyle = "rgba(245, 158, 11, 0.5)";
+        ctx.lineWidth = 1;
+        ctx.stroke();
+
         ctx.fillStyle = "#fde68a";
-        ctx.font = "bold 11px sans-serif";
         ctx.textAlign = "center";
-        ctx.fillText((p.cumPct * 100).toFixed(1) + "%", p.x, p.y - 10);
+        ctx.fillText(label, p.x, badgeY + 12);
       });
     }
 

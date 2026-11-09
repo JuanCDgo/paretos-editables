@@ -570,6 +570,23 @@ function animateParetoChart(canvasId, items, sectorName) {
     };
   });
 
+  const count = data.length;
+  // Si hay 4 o menos items (como Living o Terceros), mostramos textos horizontales
+  const isHorizontal = count <= 4;
+  
+  // Padding adaptativo para garantizar que nunca se corte el texto abajo
+  const padL = 48;
+  const padR = 48;
+  const padT = 40;
+  const padB = isHorizontal ? 65 : Math.max(100, Math.min(125, height * 0.28));
+  
+  const chartW = width - padL - padR;
+  const chartH = height - padT - padB;
+
+  const maxQty = Math.max(...data.map(d => d.qty)) * 1.28;
+  const colW = chartW / count;
+  const barW = Math.max(16, Math.min(isHorizontal ? 75 : 55, colW * 0.58));
+
   let progress = 0;
 
   function draw() {
@@ -578,20 +595,22 @@ function animateParetoChart(canvasId, items, sectorName) {
 
     ctx.clearRect(0, 0, width, height);
 
-    const padL = 45;
-    const padR = 45;
-    const padT = 35;
-    const padB = 65;
-    const chartW = width - padL - padR;
-    const chartH = height - padT - padB;
-
-    const maxQty = Math.max(...data.map(d => d.qty)) * 1.25;
+    // Líneas guía horizontales
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.06)";
+    ctx.lineWidth = 1;
+    for (let g = 0; g <= 4; g++) {
+      const gy = padT + (chartH / 4) * g;
+      ctx.beginPath();
+      ctx.moveTo(padL, gy);
+      ctx.lineTo(width - padR, gy);
+      ctx.stroke();
+    }
 
     // Línea de corte 80% (Pareto)
     const y80 = padT + chartH * (1 - 0.8);
-    ctx.strokeStyle = "rgba(245, 158, 11, 0.5)";
-    ctx.lineWidth = 1.5;
-    ctx.setLineDash([5, 5]);
+    ctx.strokeStyle = "rgba(245, 158, 11, 0.65)";
+    ctx.lineWidth = 1.8;
+    ctx.setLineDash([6, 5]);
     ctx.beginPath();
     ctx.moveTo(padL, y80);
     ctx.lineTo(width - padR, y80);
@@ -600,91 +619,119 @@ function animateParetoChart(canvasId, items, sectorName) {
 
     // Etiqueta 80%
     ctx.fillStyle = "#f59e0b";
-    ctx.font = "bold 10px sans-serif";
+    ctx.font = "bold 11px sans-serif";
     ctx.textAlign = "right";
-    ctx.fillText("Línea 80%", width - padR - 5, y80 - 6);
+    ctx.fillText("LÍNEA 80% (CORTE VITAL)", width - padR - 8, y80 - 7);
 
     // Eje izquierdo (Cantidades)
-    ctx.fillStyle = "#64748b";
-    ctx.font = "10px sans-serif";
+    ctx.fillStyle = "#94a3b8";
+    ctx.font = "bold 11px sans-serif";
     ctx.textAlign = "right";
-    ctx.fillText(Math.round(maxQty), padL - 8, padT + 8);
-    ctx.fillText("0", padL - 8, padT + chartH);
+    ctx.fillText(Math.round(maxQty), padL - 10, padT + 8);
+    ctx.fillText("0", padL - 10, padT + chartH);
 
     // Eje derecho (Porcentaje 100%)
     ctx.textAlign = "left";
-    ctx.fillText("100%", width - padR + 8, padT + 8);
-    ctx.fillText("80%", width - padR + 8, y80 + 4);
-    ctx.fillText("0%", width - padR + 8, padT + chartH);
+    ctx.fillText("100%", width - padR + 10, padT + 8);
+    ctx.fillText("80%", width - padR + 10, y80 + 4);
+    ctx.fillText("0%", width - padR + 10, padT + chartH);
 
-    const count = data.length;
-    const colW = chartW / count;
-    const barW = Math.max(14, colW * 0.55);
-
-    // Dibujar Barras
+    // DIBUJAR BARRAS
     data.forEach((d, i) => {
       const x = padL + i * colW + (colW - barW) / 2;
       const barH = (d.qty / maxQty) * chartH * progress;
       const y = padT + chartH - barH;
 
-      // Color de barra: azul corporativo o rojo si es foco crítico
-      if (d.cumPct <= 0.805 || i < 2) {
-        ctx.fillStyle = "#38bdf8"; // Vital
-      } else {
-        ctx.fillStyle = "#334155"; // Trivial
-      }
+      // Color de barra: azul para causas vitales (80%) y slate oscuro para triviales
+      const isVital = d.cumPct <= 0.805 || i < 2;
+      ctx.fillStyle = isVital ? "#38bdf8" : "#334155";
 
       ctx.beginPath();
-      ctx.roundRect(x, y, barW, barH, [4, 4, 0, 0]);
+      ctx.roundRect(x, y, barW, barH, [6, 6, 0, 0]);
       ctx.fill();
 
-      // Cantidad sobre la barra
-      if (progress > 0.5) {
+      // Cantidad y porcentaje sobre la barra
+      if (progress > 0.45) {
         ctx.fillStyle = "#ffffff";
-        ctx.font = "bold 11px sans-serif";
+        ctx.font = "bold 14px sans-serif";
         ctx.textAlign = "center";
-        ctx.fillText(d.qty, x + barW / 2, y - 6);
+        ctx.fillText(d.qty, x + barW / 2, y - 8);
+
+        // Porcentaje individual
+        ctx.fillStyle = isVital ? "#7dd3fc" : "#94a3b8";
+        ctx.font = "bold 10px sans-serif";
+        ctx.fillText((d.pct * 100).toFixed(1) + "%", x + barW / 2, y - 24);
       }
 
-      // Nombre truncado abajo
-      ctx.save();
-      ctx.translate(x + barW / 2, padT + chartH + 12);
-      ctx.rotate(-Math.PI / 4.2);
-      ctx.fillStyle = "#94a3b8";
-      ctx.font = "10px sans-serif";
-      ctx.textAlign = "right";
-      const shortName = d.cause.length > 18 ? d.cause.substring(0, 16) + "…" : d.cause;
-      ctx.fillText(shortName, 0, 0);
-      ctx.restore();
+      // ETIQUETAS DEBAJO DE LAS BARRAS (LEGIBLES Y SIN CORTES)
+      if (isHorizontal) {
+        // MODO HORIZONTAL (Living y Terceros): Centrado y en 2 líneas si es largo
+        ctx.fillStyle = "#e2e8f0";
+        ctx.font = "bold 12px sans-serif";
+        ctx.textAlign = "center";
+        
+        const words = d.cause.split(" ");
+        if (words.length > 2 && d.cause.length > 14) {
+          const mid = Math.ceil(words.length / 2);
+          const line1 = words.slice(0, mid).join(" ");
+          const line2 = words.slice(mid).join(" ");
+          ctx.fillText(line1, x + barW / 2, padT + chartH + 18);
+          ctx.fillText(line2, x + barW / 2, padT + chartH + 34);
+        } else {
+          ctx.fillText(d.cause, x + barW / 2, padT + chartH + 22);
+        }
+      } else {
+        // MODO ROTADO OPTIMIZADO (Fábrica): Ángulo suave de -34° con margen garantizado
+        ctx.save();
+        ctx.translate(x + barW / 2 + 5, padT + chartH + 16);
+        ctx.rotate(-0.58); // aprox -33 grados
+        ctx.fillStyle = isVital ? "#f1f5f9" : "#cbd5e1";
+        ctx.font = "bold 12px sans-serif";
+        ctx.textAlign = "right";
+        
+        let labelText = d.cause;
+        if (labelText.length > 26) {
+          labelText = labelText.substring(0, 24) + "…";
+        }
+        ctx.fillText(labelText, 0, 0);
+        ctx.restore();
+      }
     });
 
-    // Dibujar Curva Acumulada
+    // DIBUJAR CURVA ACUMULADA (LÍNEA DORADA DE PARETO)
     ctx.beginPath();
     ctx.strokeStyle = "#f59e0b";
-    ctx.lineWidth = 2.5;
+    ctx.lineWidth = 2.8;
 
     const points = [];
     data.forEach((d, i) => {
       const x = padL + i * colW + colW / 2;
       const curCum = d.cumPct * progress;
       const y = padT + chartH * (1 - curCum);
-      points.push({ x, y, pct: d.cumPct });
+      points.push({ x, y, cumPct: d.cumPct, qty: d.qty });
 
       if (i === 0) ctx.moveTo(x, y);
       else ctx.lineTo(x, y);
     });
     ctx.stroke();
 
-    // Puntos en la curva
-    if (progress > 0.6) {
+    // PUNTOS Y ETIQUETAS DE % ACUMULADO SOBRE LA CURVA
+    if (progress > 0.65) {
       points.forEach(p => {
+        // Círculo dorado con borde oscuro
         ctx.fillStyle = "#f59e0b";
         ctx.beginPath();
-        ctx.arc(p.x, p.y, 4, 0, Math.PI * 2);
+        ctx.arc(p.x, p.y, 5, 0, Math.PI * 2);
         ctx.fill();
         ctx.strokeStyle = "#0b0f19";
-        ctx.lineWidth = 1.5;
+        ctx.lineWidth = 2;
         ctx.stroke();
+
+        // Texto con el % acumulado sobre el punto
+        ctx.fillStyle = "#fde68a";
+        ctx.font = "bold 11px sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillText((p.cumPct * 100).toFixed(1) + "%", p.x, p.y - 10);
       });
     }
 
@@ -704,9 +751,9 @@ function animateHistoricalDefectsChart() {
 
   const categories = [
     { name: "Faltantes", abril: 15.0, mayo: 8.3, junio: 13.0 },
-    { name: "Lustre/Color", abril: 13.6, mayo: 11.1, junio: 6.6 },
-    { name: "Roto/Quebrado", abril: 26.7, mayo: 19.4, junio: 19.6 },
-    { name: "Rayado/Golpe", abril: 13.3, mayo: 11.1, junio: 30.4 }
+    { name: "Lustre / Color", abril: 13.6, mayo: 11.1, junio: 6.6 },
+    { name: "Roto / Quebrado", abril: 26.7, mayo: 19.4, junio: 19.6 },
+    { name: "Rayado / Golpe", abril: 13.3, mayo: 11.1, junio: 30.4 }
   ];
 
   let progress = 0;
@@ -717,19 +764,20 @@ function animateHistoricalDefectsChart() {
 
     ctx.clearRect(0, 0, width, height);
 
-    const padL = 40;
-    const padR = 30;
-    const padT = 30;
-    const padB = 40;
+    const padL = 45;
+    const padR = 35;
+    const padT = 50;
+    const padB = 60;
     const chartW = width - padL - padR;
     const chartH = height - padT - padB;
 
-    const maxVal = 35; // 35%
+    const maxVal = 36; // 36%
     const catStep = chartW / categories.length;
-    const barW = Math.min(22, (catStep - 20) / 3);
+    const barW = Math.min(26, (catStep - 24) / 3);
 
-    // Eje y líneas
+    // Eje base y líneas guía
     ctx.strokeStyle = "rgba(255,255,255,0.08)";
+    ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.moveTo(padL, padT + chartH);
     ctx.lineTo(width - padR, padT + chartH);
@@ -741,43 +789,73 @@ function animateHistoricalDefectsChart() {
       // Barra Abril
       const hAbril = (cat.abril / maxVal) * chartH * progress;
       ctx.fillStyle = "#38bdf8";
-      ctx.fillRect(groupX, padT + chartH - hAbril, barW, hAbril);
+      ctx.beginPath();
+      ctx.roundRect(groupX, padT + chartH - hAbril, barW, hAbril, [4, 4, 0, 0]);
+      ctx.fill();
 
       // Barra Mayo
       const hMayo = (cat.mayo / maxVal) * chartH * progress;
       ctx.fillStyle = "#10b981";
-      ctx.fillRect(groupX + barW + 2, padT + chartH - hMayo, barW, hMayo);
+      ctx.beginPath();
+      ctx.roundRect(groupX + barW + 3, padT + chartH - hMayo, barW, hMayo, [4, 4, 0, 0]);
+      ctx.fill();
 
       // Barra Junio
       const hJunio = (cat.junio / maxVal) * chartH * progress;
       ctx.fillStyle = cat.junio > 20 ? "#ef4444" : "#f59e0b";
-      ctx.fillRect(groupX + (barW + 2) * 2, padT + chartH - hJunio, barW, hJunio);
+      ctx.beginPath();
+      ctx.roundRect(groupX + (barW + 3) * 2, padT + chartH - hJunio, barW, hJunio, [4, 4, 0, 0]);
+      ctx.fill();
 
-      // Label categoría
-      ctx.fillStyle = "#94a3b8";
-      ctx.font = "11px sans-serif";
+      // Porcentajes arriba de cada barra
+      if (progress > 0.6) {
+        ctx.font = "bold 10px sans-serif";
+        ctx.textAlign = "center";
+        
+        ctx.fillStyle = "#7dd3fc";
+        ctx.fillText(cat.abril + "%", groupX + barW / 2, padT + chartH - hAbril - 5);
+
+        ctx.fillStyle = "#6ee7b7";
+        ctx.fillText(cat.mayo + "%", groupX + barW + 3 + barW / 2, padT + chartH - hMayo - 5);
+
+        ctx.fillStyle = cat.junio > 20 ? "#fca5a5" : "#fde68a";
+        ctx.fillText(cat.junio + "%", groupX + (barW + 3) * 2 + barW / 2, padT + chartH - hJunio - 5);
+      }
+
+      // Nombre de la categoría abajo (Grande, negrita y nítido)
+      ctx.fillStyle = "#f1f5f9";
+      ctx.font = "bold 13px sans-serif";
       ctx.textAlign = "center";
-      ctx.fillText(cat.name, groupX + (barW * 3) / 2, height - padB + 20);
+      ctx.fillText(cat.name, groupX + (barW * 3 + 6) / 2, padT + chartH + 26);
     });
 
-    // Leyenda arriba
-    ctx.font = "11px sans-serif";
+    // Leyenda arriba con estilo ejecutivo
+    ctx.font = "bold 12px sans-serif";
     ctx.textAlign = "left";
 
+    // Abril
     ctx.fillStyle = "#38bdf8";
-    ctx.fillRect(padL, 10, 10, 10);
-    ctx.fillStyle = "#94a3b8";
-    ctx.fillText("Abril", padL + 15, 19);
+    ctx.beginPath();
+    ctx.roundRect(padL, 16, 12, 12, [3, 3, 3, 3]);
+    ctx.fill();
+    ctx.fillStyle = "#cbd5e1";
+    ctx.fillText("Abril", padL + 18, 27);
 
+    // Mayo
     ctx.fillStyle = "#10b981";
-    ctx.fillRect(padL + 70, 10, 10, 10);
-    ctx.fillStyle = "#94a3b8";
-    ctx.fillText("Mayo", padL + 85, 19);
+    ctx.beginPath();
+    ctx.roundRect(padL + 80, 16, 12, 12, [3, 3, 3, 3]);
+    ctx.fill();
+    ctx.fillStyle = "#cbd5e1";
+    ctx.fillText("Mayo", padL + 98, 27);
 
+    // Junio (Alerta)
     ctx.fillStyle = "#ef4444";
-    ctx.fillRect(padL + 140, 10, 10, 10);
-    ctx.fillStyle = "#94a3b8";
-    ctx.fillText("Junio (Alerta Roja)", padL + 155, 19);
+    ctx.beginPath();
+    ctx.roundRect(padL + 160, 16, 12, 12, [3, 3, 3, 3]);
+    ctx.fill();
+    ctx.fillStyle = "#fca5a5";
+    ctx.fillText("Junio (Alerta de Repunte)", padL + 178, 27);
 
     if (progress < 1) requestAnimationFrame(draw);
   }
